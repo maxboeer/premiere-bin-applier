@@ -33,7 +33,7 @@ deno run build
 ```
 
 ### Arguments
-- ```xmlFilePath```:The path to the xml file that contains the bin structure
+- ```xmlFilePath```: The path to the xml file that contains the bin structure
 - ```targetFolder```: The path to the folder where the bin structure should be applied
 - ```--delete```: Optional argument that will move the files instead of copying them
 - ```--symlink```: Optional argument that will create symlinks instead of copying the files
