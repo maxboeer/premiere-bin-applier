@@ -1,6 +1,6 @@
 # Deno
-#deno.lock
-#build
+deno.lock
+build
 
 # Logs
 logs
