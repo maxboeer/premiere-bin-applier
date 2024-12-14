@@ -15,9 +15,9 @@ The used language is JavaScript and the app is built using [Deno](https://deno.c
 ```bash
 premiere-bin-applier.exe <xmlFilePath> <targetFolder> [--delete] [--symlink]
 ```
-Example:
+Example usage:
 ```bash
-premiere-bin-applier.exe "C:\Users\max\Documents\project.xml" "D:\premiere_projects\project\src" --delete
+./premiere-bin-applier.exe "C:\project.xml" "D:\premiere_projects\project\src" --delete
 ```
 
 ### Alternative usage
