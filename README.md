@@ -10,7 +10,7 @@ The used language is JavaScript and the app is built using [Deno](https://deno.c
 ## How to use
 ### Using the executable
 1. Export your Premiere Pro project as an XML file _(File -> Export -> Final Cut Pro XML)_
-2. ~~Download the latest release from the releases page~~ _(coming soon)_
+2. Download the latest release from the releases page
 3. Run the executable with the following arguments:
 ```bash
 premiere-bin-applier.exe <xmlFilePath> <targetFolder> [--delete] [--symlink]
