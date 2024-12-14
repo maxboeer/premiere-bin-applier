@@ -1,0 +1,9 @@
+{
+  "tasks": {
+    "dev": "deno run --allow-read --allow-write --no-check main.js",
+    "build": "deno compile --allow-read --allow-write --no-check --output premiere-bin-applier.exe main.js"
+  },
+  "imports": {
+    "@std/assert": "jsr:@std/assert@1"
+  }
+}
