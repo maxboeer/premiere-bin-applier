@@ -1,5 +1,5 @@
 # Premiere Bin Applier
-An app that lets you apply the bin structure from inside premiere pro to you local file system.
+An app that lets you apply the bin structure from inside premiere pro to your local file system.
 
 ## How it works
 The app reads the bin structure from an XML file exported from Premiere Pro and applies it to a target folder.
