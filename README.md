@@ -21,11 +21,11 @@ premiere-bin-applier.exe <xmlFilePath> <targetFolder> [--delete] [--symlink]
 2. Clone the repository
 3. Run the program by running:
 ```bash
-powershell deno run dev <xmlFilePath> <targetFolder> [--delete] [--symlink]
+deno run dev <xmlFilePath> <targetFolder> [--delete] [--symlink]
 ```
 3. Or build the program running:
 ```bash
-powershell deno run build
+deno run build
 ```
 
 ### Arguments
