@@ -4,6 +4,7 @@ import { join } from "https://deno.land/std/path/mod.ts";
 import ProgressBar from "jsr:@deno-library/progress";
 
 let completedItems = 0;
+const skippedFiles = [];
 
 function getAbsoluteFilePath(pathurl) {
   const url = new URL(pathurl);
@@ -14,6 +15,37 @@ function getAbsoluteFilePath(pathurl) {
 async function parseXmlFile(filePath) {
   const xmlContent = await Deno.readTextFile(filePath);
   return parse(xmlContent);
+}
+
+function findFilePathById(fileId, xmlObject) {
+  let pathurl = null;
+
+  function traverse(node) {
+    if (pathurl) return; // Stop traversing if pathurl is found
+
+    if (node && node.file && Array.isArray(node.file)) {
+      for (const file of node.file) {
+        if (file["@id"] === fileId && file.pathurl) {
+          pathurl = file.pathurl;
+          return;
+        }
+      }
+    } else if (node && node.file && node.file["@id"] === fileId && node.file.pathurl) {
+      pathurl = node.file.pathurl;
+      return;
+    }
+
+    for (const key in node) {
+      if (node && typeof node[key] === 'object') {
+        traverse(node[key]);
+      }
+    }
+  }
+
+  traverse(xmlObject);
+  if (!pathurl)
+    return null;
+  return getAbsoluteFilePath(pathurl);
 }
 
 function extractBins(xmlObject) {
@@ -43,13 +75,42 @@ function extractBins(xmlObject) {
       if (Array.isArray(node.clip)) {
         node.clip.forEach(clip => {
           const clipPath = join(path, clip.name);
-          const filePath = getAbsoluteFilePath(clip.media.video.track.clipitem.file.pathurl);
-          bins.push({ type: "file", path: clipPath, filePath });
+          let filePath;
+
+          if(clip.media.video) {
+              filePath = findFilePathById(clip.media.video.track.clipitem.file["@id"], xmlObject);
+          }else if (clip.media.audio) {
+            if (Array.isArray(clip.media.audio.track)){
+                filePath = findFilePathById(clip.media.audio.track[0].clipitem.file["@id"], xmlObject);
+            }else{
+                filePath = findFilePathById(clip.media.audio.track.clipitem.file["@id"], xmlObject);
+            }
+          }
+
+          if (!filePath)
+            skippedFiles.push(clipPath);
+          else
+            bins.push({type: "file", path: clipPath, filePath});
         });
       } else {
-        const clipPath = join(path, node.clip.name);
-        const filePath = getAbsoluteFilePath(node.clip.media.video.track.clipitem.file.pathurl);
-        bins.push({ type: "file", path: clipPath, filePath });
+        const clip = node.clip;
+        const clipPath = join(path, clip.name);
+        let filePath;
+
+        if(clip.media.video) {
+          filePath = findFilePathById(clip.media.video.track.clipitem.file["@id"], xmlObject);
+        }else if (clip.media.audio) {
+          if (Array.isArray(clip.media.audio.track)){
+            filePath = findFilePathById(clip.media.audio.track[0].clipitem.file["@id"], xmlObject);
+          }else{
+            filePath = findFilePathById(clip.media.audio.track.clipitem.file["@id"], xmlObject);
+          }
+        }
+
+        if (!filePath)
+          skippedFiles.push(clipPath);
+        else
+          bins.push({type: "file", path: clipPath, filePath});
       }
     }
   }
@@ -72,7 +133,6 @@ async function createDirectories(bins, targetFolder) {
 async function handleFiles(bins, targetFolder, deleteOriginals, createSymlinks) {
   const totalItems = bins.length;
   const errors = [];
-  const skippedFiles = [];
   const progressBar = new ProgressBar({
     total: totalItems
   });
