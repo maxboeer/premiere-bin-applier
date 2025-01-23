@@ -74,6 +74,7 @@ function extractBins(xmlObject) {
     if (node.clip) {
       if (Array.isArray(node.clip)) {
         node.clip.forEach(clip => {
+          if (clip.name.endsWith(".aep")) return;
           const clipPath = join(path, clip.name);
           let filePath;
 
@@ -94,6 +95,7 @@ function extractBins(xmlObject) {
         });
       } else {
         const clip = node.clip;
+        if (clip.name.endsWith(".aep")) return;
         const clipPath = join(path, clip.name);
         let filePath;
 
@@ -187,6 +189,19 @@ async function handleFiles(bins, targetFolder, deleteOriginals, createSymlinks) 
   }
 }
 
+async function writeChangedFilesToJson(bins, targetFolder) {
+  const changedFiles = bins
+    .filter(bin => bin.type === "file")
+    .map(bin => ({
+      oldPath: bin.filePath,
+      newPath: join(targetFolder, bin.path)
+    }));
+
+  const jsonFilePath = join(targetFolder, "migrationInfo.json");
+  const jsonContent = JSON.stringify(changedFiles, null, 2);
+  await Deno.writeTextFile(jsonFilePath, jsonContent);
+}
+
 async function main() {
   const args = Deno.args;
   const xmlFilePath = args.find(arg => !arg.startsWith("--"));
@@ -212,6 +227,8 @@ async function main() {
     await createDirectories(bins, targetFolder);
     console.log(`${symlinkFlag ? "Creating symlinks for" : (deleteFlag ? "Moving" : "Copying")} files...`);
     await handleFiles(bins, targetFolder, deleteFlag, symlinkFlag);
+    console.log("Writing migration info to JSON...");
+    writeChangedFilesToJson(bins, targetFolder);
     console.log("%cProcess completed.", "color: green");
   } catch (error) {
     console.error(`%cError: ${error.message}`, "color: red");
