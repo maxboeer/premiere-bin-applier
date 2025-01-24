@@ -42,6 +42,6 @@ deno run build
 - ```--symlink```: Optional argument that will create symlinks instead of copying the files
 
 ### Relinking the media
-1. Download a plugin that allows you to run ExtendScripts in Premiere Pro (e.g. [JSX Launcher](https://exchange.adobe.com/apps/cc/12096/jsx-launcher)).
-2. Place the previously generated ```migrationInfo.json``` (located inside the target directory) next to the project file (.prproj).
-3. Run the [```relinkMedia.jsx```](relinkMedia.jsx) script in Premiere Pro.
+1. Download a plugin that allows you to run ExtendScripts in Premiere Pro (e.g. [JSX Launcher](https://exchange.adobe.com/apps/cc/12096/jsx-launcher))
+2. Place the previously generated ```migrationInfo.json``` (located inside the target directory) next to the project file (.prproj)
+3. Run the [```relinkMedia.jsx```](relinkMedia.jsx) script in Premiere Pro
